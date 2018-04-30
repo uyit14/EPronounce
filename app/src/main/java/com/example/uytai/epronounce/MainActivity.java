@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         database = new Database(MainActivity.this, "epronounce.sql", null, 1);
         //tạo table PronounceA
         MainActivity.database.QueryData("CREATE TABLE IF NOT EXISTS PronounceA(Id INTEGER PRIMARY KEY AUTOINCREMENT, Content VARCHAR(500))");
-        //addData();
+        addData();
     }
 
     //add dữ liệu mẫu
