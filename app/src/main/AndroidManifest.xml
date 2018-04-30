@@ -18,7 +18,8 @@
         </activity>
         <activity android:name=".ResourceActivity" />
         <activity android:name=".AddProAActivity" />
-        <activity android:name=".PronouncingAActivity"></activity>
+        <activity android:name=".PronouncingAActivity" />
+        <activity android:name=".TestResultActivity"></activity>
     </application>
 
 </manifest>

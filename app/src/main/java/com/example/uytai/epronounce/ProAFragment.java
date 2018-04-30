@@ -49,11 +49,10 @@ public class ProAFragment extends Fragment {
         ButterKnife.bind(this, view);
         click();
         sql();
-        //Toast.makeText(getActivity().getApplicationContext(), ResourceActivity.arrayList.get(0).getContent()+" 123", Toast.LENGTH_SHORT).show();
-        // Inflate the layout for this fragment
         return view;
     }
 
+    //các sự kiện click
     private void click() {
         //add
         btn_add_sentence.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +81,7 @@ public class ProAFragment extends Fragment {
         });
     }
 
+    //
     public void init() {
         arrayList = new ArrayList<>();
         adapter = new APronounceAdapter(getActivity().getApplicationContext(), arrayList);
@@ -114,9 +114,6 @@ public class ProAFragment extends Fragment {
 
     //
     private void sql() {
-        //tạo table
-        MainActivity.database.QueryData("CREATE TABLE IF NOT EXISTS PronounceA(Id INTEGER PRIMARY KEY AUTOINCREMENT, Content VARCHAR(500))");
-        //insert data
         //database.QueryData("INSERT INTO PronounceA VALUES(null, 'My name is Uy')");
         init();
         //
