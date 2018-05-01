@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
@@ -34,8 +35,11 @@ public class PronouncingAActivity extends AppCompatActivity {
     @BindView(R.id.tv_count)
     TextView tv_count;
 
-    public static ArrayList<EPronounce> arrayList;
-    public static ArrayList<EPronounce> arrayList2;
+    ArrayList<EPronounce> arrayList;
+    ArrayList<EPronounce> arrayList2;
+    //
+    ArrayList<String> arrList_correct;
+    ArrayList<String> arrList_wrong;
 
     private final int REQ_CODE_SPEECH_INPUT = 100;
 
@@ -52,6 +56,8 @@ public class PronouncingAActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         arrayList = new ArrayList<>();
         arrayList2 = new ArrayList<>();
+        arrList_correct = new ArrayList<>();
+        arrList_wrong = new ArrayList<>();
         click();
         sql();
         //tg đọc là 10s
@@ -131,7 +137,7 @@ public class PronouncingAActivity extends AppCompatActivity {
         }
     }
 
-    //boolean flag=false;
+    boolean flag=false;
     //CountDownTimer: hàm để cho client đọc và kiểm tra đúng hay không?
     private void CountDownTimer(final int duration, final long tick){
         new CountDownTimer(duration, tick) {
@@ -142,26 +148,48 @@ public class PronouncingAActivity extends AppCompatActivity {
                     tvcontent_read.setText(arrayList2.get(i).getContent());
                     // nếu đọc đúng hết câu
                 if(arrayList2.get(i).getContent().equals(content)){
+                    flag=true;
                     //set chữ xanh
                     tvSpeech_input.setTextColor(getResources().getColor(R.color.colorGreen));
-                    //biến để đếm số câu đúng
-                    result++;
+                }else{
+                    tvSpeech_input.setTextColor(getResources().getColor(R.color.colorBlack));
+                    flag=false;
                 }
             }
             public void onFinish() {
+                if(i==arrayList2.size()-1){
+                    if(flag){
+                        result++;
+                        arrList_correct.add(arrayList2.get(i).getContent());
+                    }else{
+                        arrList_wrong.add(arrayList2.get(i).getContent());
+                    }
+                }
                 if(i<arrayList2.size()-1){
+                    if(flag){
+                        arrList_correct.add(arrayList2.get(i).getContent());
+                        //biến để đếm số câu đúng
+                        result++;
+                    }else{
+                        arrList_wrong.add(arrayList2.get(i).getContent());
+                    }
                         progress+=10;
                         progressBar.setProgress(progress);
-                        tv_count.setText(progress/10 + "/10");
+                        tv_count.setText((progress/10) + "/10");
                     i++;
                     CountDownTimer(duration, tick);
                 }else{
                     tvTime.setText("Time out!");
                     Intent intent = new Intent(PronouncingAActivity.this, TestResultActivity.class);
-                    intent.putExtra(Constant.KEY_PUT_RESULT, result);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(Constant.KEY_PUT_ARRAYLIST_CORRECT, arrList_correct);
+                    bundle.putSerializable(Constant.KEY_PUT_ARRAYLIST_wrong, arrList_wrong);
+                    bundle.putInt(Constant.KEY_PUT_RESULT, result);
+                    intent.putExtra(Constant.KEY_PUT_BUNDLE,bundle);
                     startActivity(intent);
                     finish();
                 }
+                flag=false;
             }
         }.start();
     }

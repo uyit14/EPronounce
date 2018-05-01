@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -21,6 +23,9 @@ public class TestResultActivity extends AppCompatActivity {
     @BindView(R.id.btn_home)
     ImageView btn_home;
     int result;
+    //
+    ArrayList<String> arrList_correct;
+    ArrayList<String> arrList_wrong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +33,8 @@ public class TestResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test_result);
         ButterKnife.bind(this);
         //
+        arrList_correct = new ArrayList<>();
+        arrList_wrong = new ArrayList<>();
         getresult();
         //
         click();
@@ -53,13 +60,23 @@ public class TestResultActivity extends AppCompatActivity {
         btn_review.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Function Unfinished", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(TestResultActivity.this, TestReviewActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(Constant.KEY_PUT_ARRAYLIST_CORRECT, arrList_correct);
+                bundle.putSerializable(Constant.KEY_PUT_ARRAYLIST_wrong, arrList_wrong);
+                intent.putExtra(Constant.KEY_PUT_BUNDLE, bundle);
+                startActivity(intent);
             }
         });
     }
 
     private void getresult() {
-        result = getIntent().getIntExtra(Constant.KEY_PUT_RESULT, -1);
-        btn_result.setText(result + "/10");
+        Bundle bundle = getIntent().getBundleExtra(Constant.KEY_PUT_BUNDLE);
+        if(bundle!=null){
+            result = bundle.getInt(Constant.KEY_PUT_RESULT, -1);
+            arrList_correct = (ArrayList<String>) bundle.getSerializable(Constant.KEY_PUT_ARRAYLIST_CORRECT);
+            arrList_wrong = (ArrayList<String>) bundle.getSerializable(Constant.KEY_PUT_ARRAYLIST_wrong);
+            btn_result.setText(result + "/10");
+        }
     }
 }

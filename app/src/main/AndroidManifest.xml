@@ -19,7 +19,8 @@
         <activity android:name=".ResourceActivity" />
         <activity android:name=".AddProAActivity" />
         <activity android:name=".PronouncingAActivity" />
-        <activity android:name=".TestResultActivity"></activity>
+        <activity android:name=".TestResultActivity" />
+        <activity android:name=".TestReviewActivity"></activity>
     </application>
 
 </manifest>
