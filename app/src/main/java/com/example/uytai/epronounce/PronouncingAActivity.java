@@ -1,13 +1,17 @@
 package com.example.uytai.epronounce;
 
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.speech.RecognizerIntent;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -48,6 +52,9 @@ public class PronouncingAActivity extends AppCompatActivity {
     int progress = 0;
     int num1, num2;
     int result=0;
+    //audio
+    MediaPlayer mediaPlayer;
+    MediaPlayer mediaPlayer2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +67,46 @@ public class PronouncingAActivity extends AppCompatActivity {
         arrList_wrong = new ArrayList<>();
         click();
         sql();
-        //tg đọc là 10s
-        CountDownTimer(10000, 1000);
+        //custom time
+        CustomTime();
+    }
+
+    private void audioclock() {
+        mediaPlayer2 = MediaPlayer.create(PronouncingAActivity.this, R.raw.clock_ticking);
+        mediaPlayer2.start();
+    }
+
+
+    private void audiowhencorrecr() {
+        mediaPlayer = MediaPlayer.create(PronouncingAActivity.this, R.raw.correct);
+        mediaPlayer.start();
+    }
+
+    private void CustomTime() {
+        final Dialog dialog = new Dialog(PronouncingAActivity.this);
+        dialog.setContentView(R.layout.dialog_custom_time);
+        dialog.setTitle("Choose time!");
+        ImageButton dialogBtn_OK = dialog.findViewById(R.id.btn_ok);
+        ImageButton dialogBtn_NOT = dialog.findViewById(R.id.btn_not);
+        final TextInputLayout tip_time = dialog.findViewById(R.id.tip_time);
+        dialogBtn_NOT.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+        //
+        dialogBtn_OK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String timeStr = tip_time.getEditText().getText().toString();
+                int timeInt = Integer.parseInt(timeStr);
+                CountDownTimer(timeInt*1000, 1000);
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
     //truy van csdl và random số câu sẽ lấy ra cho người dùng đọc
@@ -140,23 +185,33 @@ public class PronouncingAActivity extends AppCompatActivity {
     boolean flag=false;
     //CountDownTimer: hàm để cho client đọc và kiểm tra đúng hay không?
     private void CountDownTimer(final int duration, final long tick){
+        //text khi uer đọc
+        tvSpeech_input.setText("");
+        //set dữ liệu ra ngoài cho client đọc theo
+        tvcontent_read.setText(arrayList2.get(i).getContent());
+        //
+        audioclock();
         new CountDownTimer(duration, tick) {
             public void onTick(long millisUntilFinished) {
                 //thời gian giảm dần
                 tvTime.setText(millisUntilFinished/1000+"");
-                //set dữ liệu ra ngoài cho client đọc theo
-                    tvcontent_read.setText(arrayList2.get(i).getContent());
                     // nếu đọc đúng hết câu
+                content = content.toLowerCase();
                 if(arrayList2.get(i).getContent().equals(content)){
+                    audiowhencorrecr();
                     flag=true;
                     //set chữ xanh
                     tvSpeech_input.setTextColor(getResources().getColor(R.color.colorGreen));
+                    i++;
+                    CountDownTimer(duration, tick);
                 }else{
                     tvSpeech_input.setTextColor(getResources().getColor(R.color.colorBlack));
                     flag=false;
                 }
             }
             public void onFinish() {
+                mediaPlayer2.stop();
+                tvSpeech_input.setText("");
                 if(i==arrayList2.size()-1){
                     if(flag){
                         result++;
