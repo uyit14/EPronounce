@@ -1,6 +1,7 @@
 package com.example.uytai.epronounce;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -58,8 +60,9 @@ public class ProAFragment extends Fragment {
         btn_add_sentence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity().getApplicationContext(), AddProAActivity.class));
-                getActivity().finish();
+                dialogSelectWayA();
+//                startActivity(new Intent(getActivity().getApplicationContext(), AddProAActivity.class));
+//                getActivity().finish();
             }
         });
 
@@ -107,6 +110,38 @@ public class ProAFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    //Show dialog select 2 way to add resource
+    public void dialogSelectWayA(){
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.setContentView(R.layout.dialog_select_way);
+        dialog.setTitle("Choose way");
+        //
+        Button dialogBtnOne = dialog.findViewById(R.id.btn_add_one);
+        Button dialogBtnFile = dialog.findViewById(R.id.btn_add_file);
+
+        dialogBtnOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity().getApplicationContext(), AddProAActivity.class));
+                dialog.dismiss();
+                getActivity().finish();
+
+            }
+        });
+        dialogBtnFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Add resource A by file
+                Toast.makeText(getActivity(), "Choose file", Toast.LENGTH_SHORT).show();
+                //
+                dialog.dismiss();
+                startActivity(new Intent(getActivity().getApplicationContext(), ChooseFileActivity.class));
+
             }
         });
         dialog.show();
