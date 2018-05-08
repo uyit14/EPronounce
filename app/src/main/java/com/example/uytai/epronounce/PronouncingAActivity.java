@@ -52,6 +52,7 @@ public class PronouncingAActivity extends AppCompatActivity {
     int progress = 0;
     int num1, num2;
     int result=0;
+    int timeInt=0;
     //audio
     MediaPlayer mediaPlayer;
     MediaPlayer mediaPlayer2;
@@ -101,8 +102,12 @@ public class PronouncingAActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String timeStr = tip_time.getEditText().getText().toString();
-                int timeInt = Integer.parseInt(timeStr);
-                CountDownTimer(timeInt*1000, 1000);
+                if(timeStr.equals("")){
+                    timeInt = 10;
+                }else{
+                    timeInt = Integer.parseInt(timeStr);
+                }
+                CountDownTimer(timeInt*1000 + 1, 1000);
                 dialog.dismiss();
             }
         });
@@ -198,16 +203,17 @@ public class PronouncingAActivity extends AppCompatActivity {
                     // nếu đọc đúng hết câu
                 content = content.toLowerCase();
                 if(arrayList2.get(i).getContent().equals(content)){
-                    audiowhencorrecr();
                     flag=true;
                     //set chữ xanh
                     tvSpeech_input.setTextColor(getResources().getColor(R.color.colorGreen));
-                    i++;
-                    CountDownTimer(duration, tick);
+                    //audiowhencorrecr();
+                    //i++;
+                    //CountDownTimer(duration, tick);
                 }else{
                     tvSpeech_input.setTextColor(getResources().getColor(R.color.colorBlack));
                     flag=false;
                 }
+                //mediaPlayer.stop();
             }
             public void onFinish() {
                 mediaPlayer2.stop();
@@ -234,6 +240,7 @@ public class PronouncingAActivity extends AppCompatActivity {
                     i++;
                     CountDownTimer(duration, tick);
                 }else{
+                    mediaPlayer2.stop();
                     tvTime.setText("Time out!");
                     Intent intent = new Intent(PronouncingAActivity.this, TestResultActivity.class);
                     Bundle bundle = new Bundle();
