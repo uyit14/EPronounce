@@ -1,15 +1,19 @@
 package com.example.uytai.epronounce;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.speech.RecognizerIntent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -55,7 +59,6 @@ public class PronouncingAActivity extends AppCompatActivity {
     int timeInt=0;
     //audio
     MediaPlayer mediaPlayer;
-    MediaPlayer mediaPlayer2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,15 +75,41 @@ public class PronouncingAActivity extends AppCompatActivity {
         CustomTime();
     }
 
-    private void audioclock() {
-        mediaPlayer2 = MediaPlayer.create(PronouncingAActivity.this, R.raw.clock_ticking);
-        mediaPlayer2.start();
+    @Override
+    protected void onRestart() {
+        super.onRestart();
     }
 
 
     private void audiowhencorrecr() {
         mediaPlayer = MediaPlayer.create(PronouncingAActivity.this, R.raw.correct);
         mediaPlayer.start();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(PronouncingAActivity.this);
+        dialog.setCancelable(false);
+        dialog.setTitle("Dialog on Android");
+        dialog.setMessage("Are you sure quit?" );
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
+                //Action for "Delete".
+            }
+        })
+                .setNegativeButton("Cancel ", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Action for "Cancel".
+                        dialog.dismiss();
+                    }
+                });
+
+        final AlertDialog alert = dialog.create();
+        alert.show();
+        return super.onKeyDown(keyCode, event);
     }
 
     private void CustomTime() {
@@ -90,6 +119,13 @@ public class PronouncingAActivity extends AppCompatActivity {
         ImageButton dialogBtn_OK = dialog.findViewById(R.id.btn_ok);
         ImageButton dialogBtn_NOT = dialog.findViewById(R.id.btn_not);
         final TextInputLayout tip_time = dialog.findViewById(R.id.tip_time);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogg) {
+                Toast.makeText(getApplicationContext(), "Please, Custom your time!", Toast.LENGTH_SHORT).show();
+                dialog.show();
+            }
+        });
         dialogBtn_NOT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -195,7 +231,6 @@ public class PronouncingAActivity extends AppCompatActivity {
         //set dữ liệu ra ngoài cho client đọc theo
         tvcontent_read.setText(arrayList2.get(i).getContent());
         //
-        audioclock();
         new CountDownTimer(duration, tick) {
             public void onTick(long millisUntilFinished) {
                 //thời gian giảm dần
@@ -216,7 +251,6 @@ public class PronouncingAActivity extends AppCompatActivity {
                 //mediaPlayer.stop();
             }
             public void onFinish() {
-                mediaPlayer2.stop();
                 tvSpeech_input.setText("");
                 if(i==arrayList2.size()-1){
                     if(flag){
@@ -240,7 +274,6 @@ public class PronouncingAActivity extends AppCompatActivity {
                     i++;
                     CountDownTimer(duration, tick);
                 }else{
-                    mediaPlayer2.stop();
                     tvTime.setText("Time out!");
                     Intent intent = new Intent(PronouncingAActivity.this, TestResultActivity.class);
                     Bundle bundle = new Bundle();
